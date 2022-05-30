@@ -3,22 +3,22 @@ The period from 1775 to the bombardment of Copenhagen in september 1807 was a ti
 This will be the focus of this lesson, where we will demonstrate how to usi the SMK API swagger interface to construct a call to the API that extracts all the art works in SMK in the period from the first of January 1775 to the 30. september 1807.  
 # The SMK swagger interface
 When we land on the SMK Swagger interface it looks like this: 
-![The landing page of the SMK API swagger site](/instructions/smk_swagger/0_landing.png)
+![The landing page of the SMK API swagger site](0_landing.png)
 
 We see that there are several sections (Artworks, Artists IIIF, etc.). These a called endpoints and they are a kind of stands offering different services. At the first one we are served information on Artworks, the next information on Artist and so on. Since we want artworks from the flourishing period we will chose the "Artworks"-stand.  
 But there are several options here. In this case we will choose the "/art/search". 
 ![/art/search landing](instruction_pics/1_landing_edited.png)
 
 Folding out an option will give you more detail on what it does:
-![What it does](/instructions/smk_swagger/instruction_pics/2_what_it_does.png)
+![What it does](instruction_pics/2_what_it_does.png)
 This is exactly what we want in this case: a collection of artworks from the flourishing period with all availble information.  
 The next step is to hit the "Try it out"-button: 
-![Try it out](/instructions/smk_swagger/instruction_pics/3_try_it_out.png)
+![Try it out](instruction_pics/3_try_it_out.png)
 This gives you the opportunity to modify all the fields in the formula:
-![Trying out the swagger interface](/instructions/smk_swagger/instruction_pics/4_trying_it_out.png)
+![Trying out the swagger interface](instruction_pics/4_trying_it_out.png)
 The different fields can modify your query of the art works. The first field is "keys" which is required. This is the keyword that we will be looking for. Since we are not really looking for anything particular, we want all the works from our period, we will leave the star(it was there by default) in the keys-field. This returns everything. The next field is the output - we will leave that be, but notice how the swagger interface gives information on each field. If nothing is selected we will be served the SMK JSON. We are happy with that for now. There is a lot of fields, which consitutes alot of ways of modifiying the result that the API returns. This is really handy, when you know how the API works and exactly what you need and what you need it for. But for now it is confusing and perhaps even a bit frigthening. But that is okay. Imagine all of thise fields as knobs and switches for you to control the output of the API. Let's keep our objective in mind: extracting all the art works from 1. January 1775 and 30. September 1807. **We need to find the field where you can put in a *range* of dates**.  
 The next step is there fore to scroll down the swagger page and find the "range"-field: 
-![The Range field](/instructions/smk_swagger/instruction_pics/5_range.png)
+![The Range field](instruction_pics/5_range.png)
 There are several things here to note before we interact with the field. The first thing is the formula for defining a range: 
 > [field:{start;end}]
 
@@ -44,16 +44,16 @@ Let's insert these to time dates into the example before. Observe that we also h
 > [production_dates_end:{1775-01-01T00:00:00Z;1807-09-30T00:00:00Z}]
 
 The next step is to feed our new range to the equivalent field in the swagger user interface. This is done by clicking "*Add string item*":
-![Add string item](/instructions/smk_swagger/instruction_pics/6_range_add_string.png)
+![Add string item](instruction_pics/6_range_add_string.png)
 
 Paste in our range from above in to the field that appears:
-![Paste in range](/instructions/smk_swagger/instruction_pics/7_paste_in_range.png)
+![Paste in range](instruction_pics/7_paste_in_range.png)
 
 The next step is to scroll past all the other fields, while not worrying to much about them. Only note that there is alot of ways to query the API and ask for data in all sorts of ways. Scroll all the way down to the "*Execute*"-button and hit it!
-![Hit the Execute button](/instructions/smk_swagger/instruction_pics/7_execute.png)
+![Hit the Execute button](instruction_pics/7_execute.png)
 
 Let the API run for a minute and soon you will see the response below the "*Execute*"-button: 
-![The response](/instructions/smk_swagger/instruction_pics/8_response.png)
+![The response](instruction_pics/8_response.png)
 
 The first black box is a curl-instruction to be used at a command line. This wont be the focus of this lesson.  
 The next black box is the request URL used for accessing the data returned. If you look closely you'll notice our dates of interest in that URL. We will use this URL and discuss it further in the next lesson. For now we move on to the next and biggest black box.  
