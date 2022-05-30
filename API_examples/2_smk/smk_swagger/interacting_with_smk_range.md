@@ -7,7 +7,7 @@ When we land on the SMK Swagger interface it looks like this:
 
 We see that there are several sections (Artworks, Artists IIIF, etc.). These a called endpoints and they are a kind of stands offering different services. At the first one we are served information on Artworks, the next information on Artist and so on. Since we want artworks from the flourishing period we will chose the "Artworks"-stand.  
 But there are several options here. In this case we will choose the "/art/search". 
-![/art/search landing](/smk_swagger/instruction_pics/1_landing_edited.png)
+![/art/search landing](instruction_pics/1_landing_edited.png)
 
 Folding out an option will give you more detail on what it does:
 ![What it does](/instructions/smk_swagger/instruction_pics/2_what_it_does.png)
