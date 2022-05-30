@@ -3,7 +3,7 @@ The period from 1775 to the bombardment of Copenhagen in september 1807 was a ti
 This will be the focus of this lesson, where we will demonstrate how to usi the SMK API swagger interface to construct a call to the API that extracts all the art works in SMK in the period from the first of January 1775 to the 30. september 1807.  
 # The SMK swagger interface
 When we land on the SMK Swagger interface it looks like this: 
-![The landing page of the SMK API swagger site](0_landing.png)
+![The landing page of the SMK API swagger site](instruction_pics/0_landing.png)
 
 We see that there are several sections (Artworks, Artists IIIF, etc.). These a called endpoints and they are a kind of stands offering different services. At the first one we are served information on Artworks, the next information on Artist and so on. Since we want artworks from the flourishing period we will chose the "Artworks"-stand.  
 But there are several options here. In this case we will choose the "/art/search". 
