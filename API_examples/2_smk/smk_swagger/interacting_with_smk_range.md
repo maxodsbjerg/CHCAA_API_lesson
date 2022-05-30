@@ -44,10 +44,10 @@ Let's insert these to time dates into the example before. Observe that we also h
 > [production_dates_end:{1775-01-01T00:00:00Z;1807-09-30T00:00:00Z}]
 
 The next step is to feed our new range to the equivalent field in the swagger user interface. This is done by clicking "*Add string item*":
-![Add string item](instruction_pics/6_range_add_string.png)
+![Add string item](instruction_pics/6_1_range_add_string.png)
 
 Paste in our range from above in to the field that appears:
-![Paste in range](instruction_pics/7_paste_in_range.png)
+![Paste in range](instruction_pics/6_2_paste_in_range.png)
 
 The next step is to scroll past all the other fields, while not worrying to much about them. Only note that there is alot of ways to query the API and ask for data in all sorts of ways. Scroll all the way down to the "*Execute*"-button and hit it!
 ![Hit the Execute button](instruction_pics/7_execute.png)
