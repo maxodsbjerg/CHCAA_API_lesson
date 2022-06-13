@@ -2,6 +2,8 @@
 The period from 1775 to the bombardment of Copenhagen in september 1807 was a time of mercantile flourishing in Denmark. This was due to Denmark's neutrality in the wars between the great powers of the period. Under this neutrality Denmark was able to increase trade making especially Copenhagen traders rich. But let's say that we want to examine this period in art. How do we extract the art works from the this flourishing period that lies within SMK?  
 This will be the focus of this lesson, where we will demonstrate how to usi the SMK API swagger interface to construct a call to the API that extracts all the art works in SMK in the period from the first of January 1775 to the 30. september 1807.  
 # The SMK swagger interface
+
+
 When we land on the SMK Swagger interface it looks like this: 
 ![The landing page of the SMK API swagger site](instruction_pics/0_landing.png)
 
@@ -20,28 +22,28 @@ The different fields can modify your query of the art works. The first field is 
 The next step is there fore to scroll down the swagger page and find the "range"-field: 
 ![The Range field](instruction_pics/5_range.png)
 There are several things here to note before we interact with the field. The first thing is the formula for defining a range: 
-> [field:{start;end}]
+`[field:{start;end}]`
 
 This formula will be helpfull when we are going to create our own range in a minute. But before we do that we observe that the info about the range field also lists "Available Ranges" - this is all the things we can put instead of "field" in the formula above. So what ranges do we need in order to find the art works from our period? In this case we will use the range "production_dates_end". This way we are sure that the art works were finished within our period. One could argue that "production_dates_start" would work just as fine, but we wont go into this here.  
 The last thing we will note is that we are given an example: 
-> [modified:{2019-05-28T09:35:58Z;*}]
+`[modified:{2019-05-28T09:35:58Z;*}]`
 
 In this example the API is finding art works that have been modified in the period from the 28th of May 2019 at 09.35.58 to now. The "to now" is the "*" after the semicolon. It can be substituted by a date. So lets focus on the date format that iniates the range- this gives us the formula for which format the API expects dates to be in: 
->2019-05-28T09:35:58Z
->YYYY-MM-DDTHH:MM:SSZ
+`2019-05-28T09:35:58Z`
+`YYYY-MM-DDTHH:MM:SSZ`
 
 This is the ISO 8601 standard of showing dates and time in Universal Coordinated Time. In this standard it is also possible to note time differences, but for now let's keep it in Universal Coordinated Time to keep things simple. 
 
 Let's construct our two times in the correct format:
 The beginning of the flourishing period:  
 
->1775-01-01T00:00:00Z
+`1775-01-01T00:00:00Z`
 
 The end of the flourishing period:
->1807-09-30T00:00:00Z
+`1807-09-30T00:00:00Z`
 
 Let's insert these to time dates into the example before. Observe that we also have changed "modified" to "production_dates_end":
-> [production_dates_end:{1775-01-01T00:00:00Z;1807-09-30T00:00:00Z}]
+`[production_dates_end:{1775-01-01T00:00:00Z;1807-09-30T00:00:00Z}]`
 
 The next step is to feed our new range to the equivalent field in the swagger user interface. This is done by clicking "*Add string item*":
 ![Add string item](instruction_pics/6_1_range_add_string.png)
