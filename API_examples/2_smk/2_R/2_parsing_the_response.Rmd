@@ -107,7 +107,7 @@ flourishing_artworks %>%
   select(creator_1, title)
 ```
 
-But what if we want a quick way to see the a piece of art work's information presented in a way that is more readable for people who, unlike you, don't tamper with APIs and raw data. A nice feature of this particular API is that i returns a link to each art work in the National Gellery's online platform: 
+But what if we want a quick way to see the a piece of art work's information presented in a way that is more readable for people who, unlike you, don't tamper with APIs and raw data. A nice feature of this particular API is that i returns a link to each art work in the National Gallery's online platform: 
 
 ```{r}
 flourishing_artworks %>% 
@@ -141,8 +141,14 @@ flourishing_artworks %>%
   select(creator_1, title, frontend_url, on_display, production_start, production_end) -> flourishing_artworks_df
 ```
 
-```{r}
 
+So now we managed to get the production start and end out of the nested JSON format. Next we will use the function `glimpse()` to create a summary of the "flourishing_artworks_df"-dataframe:
+
+```{r}
+glimpse(flourishing_artworks_df)
+```
+We notice that the first three columns are of the character-type(indicated by "<chr>"). This is fine, the observations consists of text(characters put together). The next column, "on_display", is of the logical type(indicated by <int>). The last two columns is also of the character type, but with hour human eyes we can see that this is dates. And dates is actually also a data type in R, but we need to have R to realise that the characters in "production_start" and "production_end" are indeed dates. For this we use the package [lubridate](https://lubridate.tidyverse.org) and it's function `as_date()` to create a new column, "date_end", that holds just the date(and not the time as well). Next we use the function `count()` to see the completions of works dispersed on dates:
+```{r}
 library(lubridate)
 
 flourishing_artworks_df %>% 
@@ -150,40 +156,17 @@ flourishing_artworks_df %>%
   count(date_end)
 ```
 
+Lets try to visualise the finishing of the art works overtime. Since there is just a few observations in the early 18th century we filter out any observations before 1775-01-01 Using the ggplot2 package we create our visualisation(notice how we assing the x and y-axis withing `ggplot()` and `geom_line()` is where we define that the visualisation should be aline. For more information on data visualisation see chapter 3 - [Data Visualisation](https://r4ds.had.co.nz/data-visualisation.html#data-visualisation) in *R for Data Science*)
 
 ```{r}
-flourishing_artworks_df %>% 
+flourishing_artworks_df %>%
   mutate(date_end = as_date(production_end)) %>% 
+  filter(date_end > "1775-01-01") %>% 
   count(date_end) %>% 
   ggplot(aes(x=date_end, y=n)) +
   geom_line() + 
   xlab("")
 ```
-```{r}
-flourishing_artworks_df %>% 
-  mutate(date_start = as_date(production_start)) %>% 
-  count(date_start) %>% 
-  ggplot(aes(x=date_start, y=n)) +
-  geom_line() + 
-  xlab("")
-```
 
 
 
-```{r}
-flourishing_artworks_df %>% 
-  mutate(production_period = interval(production_start, production_end)) %>% 
-  mutate(production_time = time_length(production_period, unit = "years")) %>% 
- count(production_time, sort = TRUE)
-```
-
-
-
-```{r}
-flourishing_artworks_df %>% 
-  mutate(production_period = interval(production_start, production_end)) %>% 
-  mutate(production_time = time_length(production_period, unit = "years")) %>% 
-  filter(near(production_time, 0.997260274))
-```
-
-So 1300 of the works have a production time of one year
