@@ -63,35 +63,93 @@ Clicking on this box expands the view and clicking "Try it out" makes the docume
 
 The next step is to paste in the search string from before into the query field, which replaces the placeholder search: 
 ![Pasting in our query](pics/swagger_paste_in_query.png)
+Beneath the query field there is a list of all the fields that the API can return. It is a good idea to read through this list as it will give an idea of which kind of analytical questions can be examined through the data. E.g there is a field called "fulltext_org", which contains: **The original OCR text for the article.**. So this tells us that we will be able to perform [text mining](https://en.wikipedia.org/wiki/Text_mining) on our data. Another thing field amongst many is the timestamp which is the publication date for the articles, so adding a temporal perspective in any analysis will also be possible. 
+Moving further down the swagger page leads to our next fields og particular focus: 
+![Setting max rows and the file format](pics/swagger_max_rows.png)
+The first red circle is the "max"-value. This is where you define how many articles you want to have returned by the API. Remember that our current search return 644 articles and the defaul value is 10. By changing this value to "-1" as shown above, we are returned all articles that the search query matches.  
+The next step is to change the default format value from JSON to CSV, as shown above! The last step is to press the blue "Activate" button. 
+
+The result is the following: 
+
+![The response in swagger](pics/swagger_response.png)
+Here we are given an request url (marked by the red circle). This URL holds a CSV-file that contains our 644 articles. Now that we have this request URL we are ready to import the articles into R. But before we do this we will focus on the Request-URL as given by swagger above
+
+
+>http://labs.statsbiblioteket.dk/labsapi/api/aviser/export/fields?query=korrespondent%20AND%20paris%20AND%20py%3A%5B1870%20TO%201875%5D%20AND%20familyId%3Adagbladetkoebenhavn1851&fields=link&fields=recordID&fields=timestamp&fields=pwa&fields=cer&fields=fulltext_org&fields=pageUUID&fields=editionUUID&fields=titleUUID&fields=editionId&fields=familyId&fields=newspaper_page&fields=newspaper_edition&fields=lplace&fields=location_name&fields=location_coordinates&max=-1&structure=header&structure=content&format=CSV
+
+In order to bette understand this url we break it into indvidual pieces:  
+
+|Explanation|URL segment
+|:------------                 |:-------------
+|Base URL                      | http://labs.statsbiblioteket.dk
+|API - endpoint                | /labsapi/api/aviser/export/fields
+|Query:                        | ?query=korrespondent%20AND%20paris%20AND%20py%3A%5B1870%20TO%201875%5D%20 AND%20familyId%3Adagbladetkoebenhavn1851
+|Which fields to export:       |&fields=link&fields=recordID&fields=timestamp&fields=pwa&fields=cer&fields=fulltext_org&fields=pageUUID &fields=editionUUID&fields=titleUUID&fields=editionId&fields=familyId&fields=newspaper_page &fields=newspaper_edition&fields=lplace&fields=location_name&fields=location_coordinates
+|Max number of rows to return  |&max=-1
+|Structure                     | &structure=header&structure=content|
+|File format to return:        | &format=CSV|
+
+So in summary the Swagger interface constructs a fairly complex URL by presenting the options in a user friendly graphical interface. It is this particular request URL that we need in our programming software in ordner to load the data in. In the next section we will load the data into R and do a simple analysis, were we want know the dispersion of articles in our five year period. 
+
 
 
 # Loading relevant libraries
-
-The dataset is processed in the software R, offering various methods for statistical analysis and graphic representation of the results. In R, one works with packages each adding numerous functionalities to the core functions of R. In this example, the relevant packages are:
+Before we embark on bringing in the data and doing a simple analysis we must load the relevant packages that adds numerous functionalisties to R. In this example, the relevant packages are:
 
 Documentation for each package: <br>
 *https://www.tidyverse.org/packages/ <br>
-*https://cran.r-project.org/web/packages/tidytext/vignettes/tidytext.html <br>
 *https://lubridate.tidyverse.org/ <br>
-*https://ggplot2.tidyverse.org/ <br>
-*https://cran.r-project.org/web/packages/ggwordcloud/vignettes/ggwordcloud.html<br>
 
-Additional information about R: 
-https://www.r-project.org/
 
 ```{r, message=FALSE}
 library(tidyverse)
-library(tidytext)
 library(lubridate)
-library(ggwordcloud)
 ```
 
-# Loading data from St. Croix Avis 1878
-
-The dataset is loaded into R. This is done via a retrieve link from the API. This link is created by the [Swagger UI](http://labs.statsbiblioteket.dk/labsapi/api//api-docs?url=/labsapi/api/openapi.yaml), which is documentation and user interface for the API. Here we have specified that we want newspaper data from the St. Croix Avis from the year 1878. This data is loaded into R with the `read_csv` function since we also have specified the data format to be CSV in the Swagger UI: 
+# Loading data from the Newpaper API 
+By copying the request URL from the Newspaper API swagger interfaces we can paste into the following function:
 
 ```{r}
-croix <- read_csv("http://labs.statsbiblioteket.dk/labsapi/api/aviser/export/fields?query=py%3A1878%20AND%20familyId%3Astcroixavisdvi&fields=link&fields=recordID&fields=timestamp&fields=pwa&fields=cer&fields=fulltext_org&fields=pageUUID&fields=editionUUID&fields=titleUUID&fields=editionId&fields=familyId&fields=newspaper_page&fields=newspaper_edition&fields=lplace&fields=location_name&fields=location_coordinates&max=5000&structure=header&structure=content&format=CSV")
+dagsbladet_paris <- read_csv("http://labs.statsbiblioteket.dk/labsapi/api/aviser/export/fields?query=korrespondent%20AND%20paris%20AND%20py%3A%5B1870%20TO%201875%5D%20AND%20familyId%3Adagbladetkoebenhavn1851&fields=link&fields=recordID&fields=timestamp&fields=pwa&fields=cer&fields=fulltext_org&fields=pageUUID&fields=editionUUID&fields=titleUUID&fields=editionId&fields=familyId&fields=newspaper_page&fields=newspaper_edition&fields=lplace&fields=location_name&fields=location_coordinates&max=-1&structure=header&structure=content&format=CSV")
 ```
-CSV is short for Comma Separated Values that is a way of structuring a dataset in plain text. CSV files are structured in columns separated by commas and in rows separated by lines. Each row in the data correspond to identified articles by the segmentations-process during the digitisation process of the newspapers.  
-In the output from the `read_csv`-function R tells us which columns are present in the dataset and what type of data it has recognised in the column's rows. Most of them are "col_character()", which means the rows in the column contains textual data (character signs). Others have the "col_double()", which means the rows in the column contains numbers. This is a question of datatypes, which can be very important when coding, but in the case of this workshop we won't work further with them.    
+A brief summary of the current situation is that our data is dilivered in by the request URL in CSV-format, which is short for Comma Separated Values. CSV files are structured in columns separated by commas and in rows separated by lines. Each row in the data correspond to identified articles by the segmentations-process during the digitisation process of the newspapers. The request URL is pasted in the `read_csv()`-functions, which parses the data into a dataframe in R. This dataframe is named "dagsbladet_paris". 
+
+In the output from the `read_csv`-function R tells us which columns are present in the dataset and what type of data it has recognised in the column's rows. Most of them are "col_character()", which means the rows in the column contains textual data (character signs). Others have the "col_double()", which means the rows in the column contains numbers. This is a question of datatypes, which can be very important when coding, but without the scope of this lesson. 
+
+The next step is to do the relatively simple examination of the timely dispersion of these articles containing "korrespondent" and "paris" in the period 1870 to 1875 from the newspaper Dagsbladet. 
+
+# Timely dispersion of articles in the period 1870 to 1875
+
+Currently the only column we have containing temporal information is the column "timestamp". The information stored in this column is pretty dense since it contain both year, month, day and hour, minute and second for the articles. In order to work with years as the unit of dispersion within our articles, we need to extract the year from the "timestamp" column. We do this using the `year`-function from the lubridate-packages. This creates a new column called "year" for months.  Since each row in the dataframe "dagsbladet_paris" consist of one article we can se the dispersion of articles by counting on our new "year" column:
+```{r}
+dagsbladet_paris %>% 
+  mutate(year = year(timestamp)) %>% 
+  count(year)
+```
+
+Visualising this would be the next step and we we use the package ggplot2. For more information and further explanation see the chapter [Data visualisation](https://r4ds.had.co.nz/data-visualisation.html) in the book [R for Data Science](https://r4ds.had.co.nz/index.html)
+```{r}
+dagsbladet_paris %>% 
+  mutate(year = year(timestamp)) %>% 
+  count(year) %>% 
+  ggplot(aes(x = year, y = n)) +
+  geom_line()
+```
+We see that the year 1870 has the most articles in our dataset with 139 articles. For some reason the number of articles drops to almost half in the following two year before rising to 133 in 1874. An explanation of this calls for further investigation, but before doing so, there is a 
+
+
+```{r}
+dagsbladet_paris_stat <- read_csv("http://labs.statsbiblioteket.dk/labsapi/api/aviser/stats/timeline?query=korrespondent%20AND%20paris%20AND%20familyId%3Adagbladetkoebenhavn1851&filter=recordBase%3Adoms_aviser&granularity=year&startTime=1870&endTime=1875&elements=articles&elements=pages&elements=editions&structure=header&structure=content&format=CSV")
+```
+
+```{r}
+dagsbladet_paris_stat
+```
+```{r}
+dagsbladet_paris_stat %>% 
+  slice(1:n()-1) %>% 
+  mutate(timestamp = as.numeric(timestamp)) %>% 
+  ggplot(aes(x = timestamp, y = articles_percentage)) +
+  geom_line()
+```
+
