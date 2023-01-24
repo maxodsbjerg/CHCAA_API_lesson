@@ -10,9 +10,10 @@ This particular lesson is written in R in the so called [R-markdown format](http
 This lesson is the first concrete example of how to interact with a specific API and we pick up exactly where we left in the previous lesson [What is an API?](https://github.com/maxodsbjerg/CHCAA_API_lesson/blob/main/what_is_an_API/what_is_an_API.md). The last thing we did in that lesson was to ask the Royal Danish Library's Newspaper API to tell us how many articles mentions "internet". The answer was returned in the JSON-format, which we will save for later, since the Newspaper API can also return answers in CSV-format, which will be the case of this example. CSV is short for Comma Separated Values and is a way of storing data in a raw text format. CSV-files are easily handled by most programming languages and especially R. The main focus of this lesson will therefore be on constructing an request URL to the Newspaper API as explained in the previous chapter. 
 
 
-As a general rule of thumb it is always best to examine and understand the data that you're trying to extract and the service which stores them and how they make them available before you dive into the API. This process will be total dependent on the specific case and in our case with the Newspaper API it involves diving into what this collection contains. In the following section we will dive into a very short survey of the Danish Newspaper Collection's history to fully understand the . 
+As a general rule of thumb it is always best to examine and understand the data that you're trying to extract and the service which stores them and how they make them available before you dive into the API. This process will be total dependent on the specific case and in our case with the Newspaper API it involves diving into what this collection contains. In the following section we will dive into a very short survey of the Danish Newspaper Collection's history to fully understand the data. 
 
-The collections exist because legal deposit of published material has been required by law in Denmark since 1697. In the light of this Danish Newspapers has been collected and stored for the future. This led to a lot of physical paper and the library began to photograph the individual pages of each newspaper and store it on microfilm instead. Then from 2014-2017 these microfilms were digitized. This involved a computer running a segmentation algorithm, which runs through all these now digital pages and identifying which headers belonged to which paragraphs thus forming articles. Along with this the computer also recognized the text thus making it searchable. The process of recognizing the text is called [Optical Character Recognition(OCR)](https://en.wikipedia.org/wiki/Optical_character_recognition). These processes were not precise and especially not on the older newspapers, which cause a lot of "misreading" in the OCR-text and in the segmentation of articles. The result is an [ALTO-file](https://en.wikipedia.org/wiki/ALTO_(XML)), which is short for Analyzed Layout and Text Object. This is highly structured data format which stores information on where the individual OCR-recognised words are placed on the page as well as which article they belong to. The best way to imagine an ALTO-file is as a file, that contains the digital layout as recognised by segmentation and OCR.
+# The Newspaper Collection's history of digitization
+The collections exist because legal deposit of published material has been required by law in Denmark since 1697. This meant that Danish Newspapers was collected and stored for the future. This led to a lot of physical paper and the library began to photograph the individual pages of each newspaper and store it on microfilm instead. Then from 2014-2017 these microfilms were digitized. This involved a computer running a segmentation algorithm, which walks through all these now digital pages and identifying which headers belonged to which paragraphs thus forming articles. Along with this the computer also recognized the text thus making it searchable. The process of recognizing the text is called [Optical Character Recognition(OCR)](https://en.wikipedia.org/wiki/Optical_character_recognition). These processes were not precise and especially not on the older newspapers, which cause a lot of "misreading" in the OCR-text and in the segmentation of articles. The result is an [ALTO-file](https://en.wikipedia.org/wiki/ALTO_(XML)), which is short for Analyzed Layout and Text Object. This is highly structured data format which stores information on where the individual OCR-recognised words are placed on the page as well as which article they belong to. The best way to imagine an ALTO-file is as a file, that contains the digital layout as recognised by segmentation and OCR.
 The combination of the ALTO-file and the digital photograph of the newspaper pages forms a pdf-file that consist of two "layers". One which is the actual picture of the newspaper pages and another layer containing the OCR text making the pdf-file searchable. 
 
 ![Visualization of the digitization process of the newspapers - in the segmentation and OCR the colors indicates which text parts has been identified as belonging to each other](pics/digitization_flow.png)
@@ -37,9 +38,9 @@ This results in the exact same. 9 hits from the newspaper "Dagbladet". So what h
 
 > korrespondent AND paris AND rémusat AND py:1873 AND familyId:dagbladetkoebenhavn1851
 
-In order to extract raw data from the newspaper API we need to be able to define the data that we are interested with these kind of advanced search strings. It is a good idea to test the search strings in Mediestream and once you are happy with the amount of hits you take your advanced search string to the API. For more help on constructing search strings see [the page for search advice in Mediestream](https://www2.statsbiblioteket.dk/mediestream/info/soegetips), where you'll also find a link to a list of the aforementioned unique ids for the newspapers.
+**In order to extract raw data from the newspaper API we need to be able to define the data that we are interested with these kind of advanced search strings**. It is a good idea to test the search strings in Mediestream and once you are happy with the amount of hits, you take your advanced search string to the API. For more help on constructing search strings see [the page for search advice in Mediestream](https://www2.statsbiblioteket.dk/mediestream/info/soegetips), where you'll also find a link to a list of the aforementioned unique ids for the newspapers.
 
-One important thing to add before venturing on is the limitations in access to the newspaper collection due to copyright. The is because of the newspapers being at the library due to the legal deposit of published material. Thus the some of the material is still under copyright meaning that you can only see newspapers older than 100 years and in order to extract data from the newspaper API the material must be older than 140 years. 
+One important thing to add before venturing on is the limitations in access to the newspaper collection due to copyright. Some of the material is still under copyright meaning that you can only see newspapers older than 100 years and in order to extract data from the newspaper API the material must be older than 140 years. 
 
 Before venturing on to extracting data from the newspaper API with a search string let's create a string that has more than 9 hits by expanding the time range and removing rémusat, in order to get articles containing paris and korrespondent in the periode 1870 to 1875:
 
@@ -51,33 +52,33 @@ This search gives us 644 hits. Now we have a some what large body of material an
 # Newspaper API: Converting the search string to a request URL
 In order to extract the 644 as raw data in a machine readable format we use the [Swagger](https://swagger.io/docs/specification/2-0/what-is-swagger/) interface for the newspapers API. A Swagger interface is an interactive documentation of an API. This means that you can both try the APIs functionality and get information about which metadata and data is exported. Furthermore the interface shows how you can limit your search. The existence of a Swagger interface (or similiar) is a good sign for data extraction, because it means that the creators have thought about disseminating the APIs functionalities.
 
-Navigating to the [Newspaper API Swagger UI](http://labs.statsbiblioteket.dk/labsapi/api//api-docs?url=/labsapi/api/openapi.yaml) will lead you to the following landing page:
+Navigating to the [Newspaper API Swagger UI](http://labs.statsbiblioteket.dk/labsapi/api//api-docs?url=/labsapi/api/openapi.yaml) will lead to the following landing page:
 ![The landing page of the Newspaper API Swagger UI](pics/swagger_landing.png)
-What we see in the blue boxes is all the different services that the API offers - and a text explaining summarizing what these services do. These are called endpoints of the API. In this case we will focus on the first service described in the top blue box, the endpoint: 
+What is seen in the blue boxes is all the different services that the API offers - and a text explaining summarizing what these services do. These are called endpoints of the API. In this case we will focus on the first service described in the top blue box, the endpoint: 
 
 > /aviser/export/fields - Export data from old newspapers at http://mediestream.dk/ 
 
-Clicking on this box expands the view and clicking "Try it out" makes the documentation interactive, which is what we want:
+Clicking on this box expands the view and clicking "Try it out" makes the documentation interactive:
 
 ![Expanding the /aviser/export/fields endpoint](pics/swagger_try_it_out.png)
 
 The next step is to paste in the search string from before into the query field, which replaces the placeholder search: 
 ![Pasting in our query](pics/swagger_paste_in_query.png)
-Beneath the query field there is a list of all the fields that the API can return. It is a good idea to read through this list as it will give an idea of which kind of analytical questions can be examined through the data. E.g there is a field called "fulltext_org", which contains: **The original OCR text for the article.**. So this tells us that we will be able to perform [text mining](https://en.wikipedia.org/wiki/Text_mining) on our data. Another thing field amongst many is the timestamp which is the publication date for the articles, so adding a temporal perspective in any analysis will also be possible. 
-Moving further down the swagger page leads to our next fields og particular focus: 
+Beneath the query field there is a list of all the fields that the API can return. It is a good idea to read through this list as it will give an idea of which kind of analytical questions can be examined through the data. E.g there is a field called "fulltext_org", which contains: **The original OCR text for the article.**, thus making it possibel to perform [text mining](https://en.wikipedia.org/wiki/Text_mining) on the data. Another field amongst many is the timestamp, which is the publication date for the articles, so adding a temporal perspective in any analysis will also be possible. 
+Moving further down the Swagger page leads to the next fields of particular focus: 
 ![Setting max rows and the file format](pics/swagger_max_rows.png)
-The first red circle is the "max"-value. This is where you define how many articles you want to have returned by the API. Remember that our current search return 644 articles and the defaul value is 10. By changing this value to "-1" as shown above, we are returned all articles that the search query matches.  
+The first red circle is the "max"-value. This is where you define how many articles you want to have returned by the API. Remember that the current search returns 644 articles and the defaul value is 10. By changing this value to "-1", as shown above, the API reutrns all articles that the search query matches.  
 The next step is to change the default format value from JSON to CSV, as shown above! The last step is to press the blue "Activate" button. 
 
 The result is the following: 
 
-![The response in swagger](pics/swagger_response.png)
-Here we are given an request url (marked by the red circle). This URL holds a CSV-file that contains our 644 articles. Now that we have this request URL we are ready to import the articles into R. But before we do this we will focus on the Request-URL as given by swagger above
+![The response in Swagger](pics/swagger_response.png)
+The focal output is the request url (marked by the red circle). This url holds a CSV-file that contains our 644 articles. Now that we have this request URL we are ready to import the articles into R. But before we do this we will focus on the Request-URL as given by Swagger above
 
 
 >http://labs.statsbiblioteket.dk/labsapi/api/aviser/export/fields?query=korrespondent%20AND%20paris%20AND%20py%3A%5B1870%20TO%201875%5D%20AND%20familyId%3Adagbladetkoebenhavn1851&fields=link&fields=recordID&fields=timestamp&fields=pwa&fields=cer&fields=fulltext_org&fields=pageUUID&fields=editionUUID&fields=titleUUID&fields=editionId&fields=familyId&fields=newspaper_page&fields=newspaper_edition&fields=lplace&fields=location_name&fields=location_coordinates&max=-1&structure=header&structure=content&format=CSV
 
-In order to bette understand this url we break it into indvidual pieces:  
+In order to better understand this url we break it into indvidual pieces:  
 
 |Explanation|URL segment
 |:------------                 |:-------------
@@ -89,16 +90,12 @@ In order to bette understand this url we break it into indvidual pieces:
 |Structure                     | &structure=header&structure=content|
 |File format to return:        | &format=CSV|
 
-So in summary the Swagger interface constructs a fairly complex URL by presenting the options in a user friendly graphical interface. It is this particular request URL that we need in our programming software in ordner to load the data in. In the next section we will load the data into R and do a simple analysis, were we want know the dispersion of articles in our five year period. 
+So in summary the Swagger interface constructs a fairly complex URL by presenting the options in a user friendly graphical interface. It is this particular request URL that we need in our programming software in order to load the data into our analytical software of choice. In the next section we will load the data into R and do a simple analysis, were we want know the dispersion of articles in our five year period. 
 
 
 
 # Loading relevant libraries
 Before we embark on bringing in the data and doing a simple analysis we must load the relevant packages that adds numerous functionalisties to R. In this example, the relevant packages are:
-
-Documentation for each package: <br>
-*https://www.tidyverse.org/packages/ <br>
-*https://lubridate.tidyverse.org/ <br>
 
 
 ```{r, message=FALSE}
@@ -106,13 +103,17 @@ library(tidyverse)
 library(lubridate)
 ```
 
+Documentation for each package: <br>
+*https://www.tidyverse.org/packages/ <br>
+*https://lubridate.tidyverse.org/ <br>
+
+
 # Loading data from the Newpaper API 
-By copying the request URL from the Newspaper API swagger interfaces we can paste into the following function:
+A brief summary of the current situation is that our data is delivered by the request URL in CSV-format. CSV files are structured in columns separated by commas and in rows separated by lines. Each row in the data correspond to identified articles by the segmentations-process during the digitisation process of the newspapers. The request URL is pasted in the `read_csv()`-functions, which parses the data into a dataframe in R. This dataframe is named "dagsbladet_paris". 
 
 ```{r}
 dagsbladet_paris <- read_csv("http://labs.statsbiblioteket.dk/labsapi/api/aviser/export/fields?query=korrespondent%20AND%20paris%20AND%20py%3A%5B1870%20TO%201875%5D%20AND%20familyId%3Adagbladetkoebenhavn1851&fields=link&fields=recordID&fields=timestamp&fields=pwa&fields=cer&fields=fulltext_org&fields=pageUUID&fields=editionUUID&fields=titleUUID&fields=editionId&fields=familyId&fields=newspaper_page&fields=newspaper_edition&fields=lplace&fields=location_name&fields=location_coordinates&max=-1&structure=header&structure=content&format=CSV")
 ```
-A brief summary of the current situation is that our data is dilivered in by the request URL in CSV-format, which is short for Comma Separated Values. CSV files are structured in columns separated by commas and in rows separated by lines. Each row in the data correspond to identified articles by the segmentations-process during the digitisation process of the newspapers. The request URL is pasted in the `read_csv()`-functions, which parses the data into a dataframe in R. This dataframe is named "dagsbladet_paris". 
 
 In the output from the `read_csv`-function R tells us which columns are present in the dataset and what type of data it has recognised in the column's rows. Most of them are "col_character()", which means the rows in the column contains textual data (character signs). Others have the "col_double()", which means the rows in the column contains numbers. This is a question of datatypes, which can be very important when coding, but without the scope of this lesson. 
 
@@ -120,7 +121,7 @@ The next step is to do the relatively simple examination of the timely dispersio
 
 # Timely dispersion of articles in the period 1870 to 1875
 
-Currently the only column we have containing temporal information is the column "timestamp". The information stored in this column is pretty dense since it contain both year, month, day and hour, minute and second for the articles. In order to work with years as the unit of dispersion within our articles, we need to extract the year from the "timestamp" column. We do this using the `year`-function from the lubridate-packages. This creates a new column called "year" for months.  Since each row in the dataframe "dagsbladet_paris" consist of one article we can se the dispersion of articles by counting on our new "year" column:
+Currently the only column we have containing temporal information is the column "timestamp". The information stored in this column is pretty dense since it contain both year, month, day and hour, minute and second for the articles. In order to work with years as the unit of dispersion within our articles, we need to extract the year from the "timestamp" column. We do this using the `year`-function from the lubridate-packages. This creates a new column called "year" for our five years.  Since each row in the dataframe "dagsbladet_paris" consist of one article we can se the dispersion of articles by counting on our new "year" column:
 ```{r}
 dagsbladet_paris %>% 
   mutate(year = year(timestamp)) %>% 
@@ -135,21 +136,9 @@ dagsbladet_paris %>%
   ggplot(aes(x = year, y = n)) +
   geom_line()
 ```
-We see that the year 1870 has the most articles in our dataset with 139 articles. For some reason the number of articles drops to almost half in the following two year before rising to 133 in 1874. An explanation of this calls for further investigation, but before doing so, there is a 
+
+We see that the year 1870 has the most articles in our dataset with 139 articles. For some reason the number of articles drops to almost half in the following two year before rising to 133 in 1874. An explanation of this calls for further investigation, but is without the scope of this lesson. 
 
 
-```{r}
-dagsbladet_paris_stat <- read_csv("http://labs.statsbiblioteket.dk/labsapi/api/aviser/stats/timeline?query=korrespondent%20AND%20paris%20AND%20familyId%3Adagbladetkoebenhavn1851&filter=recordBase%3Adoms_aviser&granularity=year&startTime=1870&endTime=1875&elements=articles&elements=pages&elements=editions&structure=header&structure=content&format=CSV")
-```
 
-```{r}
-dagsbladet_paris_stat
-```
-```{r}
-dagsbladet_paris_stat %>% 
-  slice(1:n()-1) %>% 
-  mutate(timestamp = as.numeric(timestamp)) %>% 
-  ggplot(aes(x = timestamp, y = articles_percentage)) +
-  geom_line()
-```
 
