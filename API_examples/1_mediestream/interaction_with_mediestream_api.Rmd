@@ -122,6 +122,7 @@ The next step is to do the relatively simple examination of the timely dispersio
 # Timely dispersion of articles in the period 1870 to 1875
 
 Currently the only column we have containing temporal information is the column "timestamp". The information stored in this column is pretty dense since it contain both year, month, day and hour, minute and second for the articles. In order to work with years as the unit of dispersion within our articles, we need to extract the year from the "timestamp" column. We do this using the `year`-function from the lubridate-packages. This creates a new column called "year" for our five years.  Since each row in the dataframe "dagsbladet_paris" consist of one article we can se the dispersion of articles by counting on our new "year" column:
+Between the the lines in the code beneath there is the so-called pipe (%>%) which "glues" together the commands. This makes the R-code similiar to a assembly line, where we first take the data, extract the year and then count the year. For further explanation of the pipe see the [Pipes](https://r4ds.had.co.nz/pipes.html)- chapter in **R for Data Science**.
 ```{r}
 dagsbladet_paris %>% 
   mutate(year = year(timestamp)) %>% 

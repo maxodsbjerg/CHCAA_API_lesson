@@ -12,21 +12,20 @@ editor_options:
   markdown: 
     wrap: 72
 ---
+This particular lesson is written in R in the so called [R-markdown format](https://r4ds.had.co.nz/r-markdown.html). It is assumed that you have R and Rstudio installed. In this case you will be able to follow all steps by running the code in the grey boxes beneath. For further information on getting R and Rstudio see the [Prerequisites-section](https://r4ds.had.co.nz/introduction.html#prerequisites) of the book *R for Data Science*. 
 
-In this document you'll see grey boxes. These boxes holds the R code. We
-recommend that you run them as you follow this lesson to see for your
-self what actually happens within your R Studio(Rstudio? R
-installation?)
+This lesson is the second concrete example of how to interact with a specific API and after [interacting with the SMK API we are ready](https://github.com/maxodsbjerg/CHCAA_API_lesson/blob/main/API_examples/2_smk/1_smk_swagger/interacting_with_smk_range.md)
+
 
 # Libraries
 
-How much explanation? Reference to relevant chapter of Humanities
-Computing? Or Computational Thinking?
+Before we embark on bringing in the data and doing a simple analysis we must load the relevant packages that adds numerous functionalisties to R - just as was done in the previous example. Here the relevant packages are:
 
 ```{r, message=FALSE}
 library(tidyverse)
 library(jsonlite)
 ```
+
 
 # Loading the request url into R
 
