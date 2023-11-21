@@ -46,13 +46,13 @@ Before venturing on to extracting data from the newspaper API with a search stri
 
 > korrespondent AND paris AND py:[1870 TO 1875] AND familyId:dagbladetkoebenhavn1851
 
-This search gives us 644 hits. Now we have a some what large body of material and we wan't to employ some kind og digital method on them. This can't be done in the graphical user interface of Mediestream. We need to turn our focus to the API connected to Mediestream
+This search gives us 644 hits. Now we have a somewhat large body of material and we want to employ some kind of digital method on them. This can't be done in the graphical user interface of Mediestream. We need to turn our focus to the API connected to Mediestream
 
 
 # Newspaper API: Converting the search string to a request URL
-In order to extract the 644 as raw data in a machine readable format we use the [Swagger](https://swagger.io/docs/specification/2-0/what-is-swagger/) interface for the newspapers API. A Swagger interface is an interactive documentation of an API. This means that you can both try the APIs functionality and get information about which metadata and data is exported. Furthermore the interface shows how you can limit your search. The existence of a Swagger interface (or similiar) is a good sign for data extraction, because it means that the creators have thought about disseminating the APIs functionalities.
+In order to extract the 644 as raw data in a machine readable format we use the [Swagger](https://swagger.io/docs/specification/2-0/what-is-swagger/) interface for the newspapers API. A Swagger interface is an interactive documentation of an API. This means that you can both try the APIs functionality and get information about which metadata and data is exported. Furthermore the interface shows how you can limit your search. The existence of a Swagger interface (or similar) is a good sign for data extraction, because it means that the creators have thought about disseminating the API's functionalities.
 
-Navigating to the [Newspaper API Swagger UI](http://labs.statsbiblioteket.dk/labsapi/api//api-docs?url=/labsapi/api/openapi.yaml) will lead to the following landing page:
+Navigating to the [Newspaper API Swagger UI](http://labs.statsbiblioteket.dk/labsapi/api//api-docs?URL=/labsapi/api/openapi.yaml) will lead to the following landing page:
 ![The landing page of the Newspaper API Swagger UI](pics/swagger_landing.png)
 What is seen in the blue boxes is all the different services that the API offers - and a text explaining summarizing what these services do. These are called endpoints of the API. In this case we will focus on the first service described in the top blue box, the endpoint: 
 
@@ -64,21 +64,21 @@ Clicking on this box expands the view and clicking "Try it out" makes the docume
 
 The next step is to paste in the search string from before into the query field, which replaces the placeholder search: 
 ![Pasting in our query](pics/swagger_paste_in_query.png)
-Beneath the query field there is a list of all the fields that the API can return. It is a good idea to read through this list as it will give an idea of which kind of analytical questions can be examined through the data. E.g there is a field called "fulltext_org", which contains: **The original OCR text for the article.**, thus making it possibel to perform [text mining](https://en.wikipedia.org/wiki/Text_mining) on the data. Another field amongst many is the timestamp, which is the publication date for the articles, so adding a temporal perspective in any analysis will also be possible. 
+Beneath the query field there is a list of all the fields that the API can return. It is a good idea to read through this list as it will give an idea of which kind of analytical questions can be examined through the data. E.g. there is a field called "fulltext_org", which contains: **The original OCR text for the article.**, thus making it possible to perform [text mining](https://en.wikipedia.org/wiki/Text_mining) on the data. Another field is "timestamp", which is the publication date for the articles, so adding a temporal perspective in any analysis will also be possible. 
 Moving further down the Swagger page leads to the next fields of particular focus: 
 ![Setting max rows and the file format](pics/swagger_max_rows.png)
-The first red circle is the "max"-value. This is where you define how many articles you want to have returned by the API. Remember that the current search returns 644 articles and the defaul value is 10. By changing this value to "-1", as shown above, the API reutrns all articles that the search query matches.  
+The first red circle is the "max"-value. This is where you define how many articles you want to have returned by the API. Remember that the current search returns 644 articles and the default value is 10. By changing this value to "-1", as shown above, the API returns all articles that the search query matches.  
 The next step is to change the default format value from JSON to CSV, as shown above! The last step is to press the blue "Activate" button. 
 
 The result is the following: 
 
 ![The response in Swagger](pics/swagger_response.png)
-The focal output is the request url (marked by the red circle). This url holds a CSV-file that contains our 644 articles. Now that we have this request URL we are ready to import the articles into R. But before we do this we will focus on the Request-URL as given by Swagger above
+The focal output is the request URL (marked by the red circle). This URL holds a CSV-file that contains our 644 articles. Now that we have this request URL we are ready to import the articles into R. But before we do this we will focus on the Request-URL as given by Swagger above
 
 
 >http://labs.statsbiblioteket.dk/labsapi/api/aviser/export/fields?query=korrespondent%20AND%20paris%20AND%20py%3A%5B1870%20TO%201875%5D%20AND%20familyId%3Adagbladetkoebenhavn1851&fields=link&fields=recordID&fields=timestamp&fields=pwa&fields=cer&fields=fulltext_org&fields=pageUUID&fields=editionUUID&fields=titleUUID&fields=editionId&fields=familyId&fields=newspaper_page&fields=newspaper_edition&fields=lplace&fields=location_name&fields=location_coordinates&max=-1&structure=header&structure=content&format=CSV
 
-In order to better understand this url we break it into indvidual pieces:  
+In order to better understand this URL we break it into individual pieces:  
 
 |Explanation|URL segment
 |:------------                 |:-------------
@@ -95,7 +95,7 @@ So in summary the Swagger interface constructs a fairly complex URL by presentin
 
 
 # Loading relevant libraries
-Before we embark on bringing in the data and doing a simple analysis we must load the relevant packages that adds numerous functionalisties to R. In this example, the relevant packages are:
+Before we embark on bringing in the data and doing a simple analysis we must load the relevant packages that adds numerous functionalities to R. In this example, the relevant packages are:
 
 
 ```{r, message=FALSE}
@@ -109,27 +109,27 @@ Documentation for each package: <br>
 
 
 # Loading data from the Newpaper API 
-A brief summary of the current situation is that our data is delivered by the request URL in CSV-format. CSV files are structured in columns separated by commas and in rows separated by lines. Each row in the data correspond to identified articles by the segmentations-process during the digitisation process of the newspapers. The request URL is pasted in the `read_csv()`-functions, which parses the data into a dataframe in R. This dataframe is named "dagsbladet_paris". 
+A brief summary of the current situation is that our data is delivered by the request URL in CSV-format. CSV files are structured in columns separated by commas and in rows separated by lines. Each row in the data correspond to identified articles by the segmentations-process during the digitisation process of the newspapers. The request URL is pasted in the `read_csv()`-functions, which parses the data into a data frame in R. This data frame is named "dagsbladet_paris". 
 
 ```{r}
 dagsbladet_paris <- read_csv("http://labs.statsbiblioteket.dk/labsapi/api/aviser/export/fields?query=korrespondent%20AND%20paris%20AND%20py%3A%5B1870%20TO%201875%5D%20AND%20familyId%3Adagbladetkoebenhavn1851&fields=link&fields=recordID&fields=timestamp&fields=pwa&fields=cer&fields=fulltext_org&fields=pageUUID&fields=editionUUID&fields=titleUUID&fields=editionId&fields=familyId&fields=newspaper_page&fields=newspaper_edition&fields=lplace&fields=location_name&fields=location_coordinates&max=-1&structure=header&structure=content&format=CSV")
 ```
 
-In the output from the `read_csv`-function R tells us which columns are present in the dataset and what type of data it has recognised in the column's rows. Most of them are "col_character()", which means the rows in the column contains textual data (character signs). Others have the "col_double()", which means the rows in the column contains numbers. This is a question of datatypes, which can be very important when coding, but without the scope of this lesson. 
+In the output from the `read_csv`-function R tells us which columns are present in the data set and what type of data it has recognised in the column's rows. Most of them are "col_character()", which means the rows in the column contains textual data (character signs). Others have the "col_double()", which means the rows in the column contains numbers. This is a question of datatypes, which can be very important when coding, but without the scope of this lesson. 
 
 The next step is to do the relatively simple examination of the timely dispersion of these articles containing "korrespondent" and "paris" in the period 1870 to 1875 from the newspaper Dagsbladet. 
 
 # Timely dispersion of articles in the period 1870 to 1875
 
-Currently the only column we have containing temporal information is the column "timestamp". The information stored in this column is pretty dense since it contain both year, month, day and hour, minute and second for the articles. In order to work with years as the unit of dispersion within our articles, we need to extract the year from the "timestamp" column. We do this using the `year`-function from the lubridate-packages. This creates a new column called "year" for our five years.  Since each row in the dataframe "dagsbladet_paris" consist of one article we can se the dispersion of articles by counting on our new "year" column:
-Between the the lines in the code beneath there is the so-called pipe (%>%) which "glues" together the commands. This makes the R-code similiar to a assembly line, where we first take the data, extract the year and then count the year. For further explanation of the pipe see the [Pipes](https://r4ds.had.co.nz/pipes.html)- chapter in **R for Data Science**.
+Currently the only column we have containing temporal information is the column "timestamp". The information stored in this column is pretty dense since it contain both year, month, day and hour, minute and second for the articles. In order to work with years as the unit of dispersion within our articles, we need to extract the year from the "timestamp" column. We do this using the `year`-function from the lubridate-packages. This creates a new column called "year" for our five years.  Since each row in the data frame "dagsbladet_paris" consist of one article we can see the dispersion of articles by counting on our new "year" column:
+Between the lines in the code beneath there is the so-called pipe (%>%) which "glues" together the commands. This makes the R-code similar to an assembly line, where we first take the data, extract the year and then count the year. For further explanation of the pipe see the [Pipes](https://r4ds.had.co.nz/pipes.html)- chapter in **R for Data Science**.
 ```{r}
 dagsbladet_paris %>% 
   mutate(year = year(timestamp)) %>% 
   count(year)
 ```
 
-Visualising this would be the next step and we we use the package ggplot2. For more information and further explanation see the chapter [Data visualisation](https://r4ds.had.co.nz/data-visualisation.html) in the book [R for Data Science](https://r4ds.had.co.nz/index.html)
+Visualising this would be the next step and we use the package ggplot2. For more information and further explanation see the chapter [Data visualisation](https://r4ds.had.co.nz/data-visualisation.html) in the book [R for Data Science](https://r4ds.had.co.nz/index.html)
 ```{r}
 dagsbladet_paris %>% 
   mutate(year = year(timestamp)) %>% 
@@ -138,7 +138,7 @@ dagsbladet_paris %>%
   geom_line()
 ```
 
-We see that the year 1870 has the most articles in our dataset with 139 articles. For some reason the number of articles drops to almost half in the following two year before rising to 133 in 1874. An explanation of this calls for further investigation, but is without the scope of this lesson. 
+We see that the year 1870 has the most articles in our data set with 139 articles. For some reason the number of articles drops to almost half in the following two year before rising to 133 in 1874. An explanation of this calls for further investigation, but is without the scope of this lesson. 
 
 
 

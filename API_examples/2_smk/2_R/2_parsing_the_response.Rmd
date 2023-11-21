@@ -20,8 +20,8 @@ library(jsonlite)
 flourishing_artworks <- tibble()
 
 for (i in seq(0, 4000, 2000)) {
-  response_url <- paste0("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=", i, "&rows=2000")
-  response <- fromJSON(response_url)
+  response_URL <- paste0("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=", i, "&rows=2000")
+  response <- fromJSON(response_URL)
   df <- response$items
   flourishing_artworks <- bind_rows(flourishing_artworks, df)
 }
@@ -42,7 +42,7 @@ We have 5082 rows, which means we have 5082 art works returned from the flourish
 flourishing_artworks %>% 
   select(production)
 ```
-So here we have data frames within rows. This makes things a bit harder since the data frame isn't rectangular. Let's see what's inside the first dataframe:
+So here we have data frames within rows. This makes things a bit harder since the data frame isn't rectangular. Let's see what's inside the first data frame:
 
 ```{r}
 # 1 row of the 11th column extracted
@@ -79,7 +79,7 @@ flourishing_artworks %>%
   select(creator_1) %>% 
   count(creator_1, sort = TRUE)
 ```
-But what about the titles of the art works. It turns out that the situation is similiar even though the column is actually called "titles". It still consists of dataframes within rows:
+But what about the titles of the art works. It turns out that the situation is similiar even though the column is actually called "titles". It still consists of data frames within rows:
 ```{r}
 #Row number 14 is "titles"
 flourishing_artworks[14]
@@ -114,7 +114,7 @@ flourishing_artworks %>%
   select(frontend_url)
 ```
 
-This column is all ready in the format we like. One observation pr. row. We do not need to process this column. So if we were to add the "frontend_url" to our dataframe with creator and titles it would be as simple as `select()` the column in the last line of code from before: 
+This column is all ready in the format we like. One observation pr. row. We do not need to process this column. So if we were to add the "frontend_URL" to our data frame with creator and titles it would be as simple as `select()` the column in the last line of code from before: 
 
 
 ```{r}
@@ -142,7 +142,7 @@ flourishing_artworks %>%
 ```
 
 
-So now we managed to get the production start and end out of the nested JSON format. Next we will use the function `glimpse()` to create a summary of the "flourishing_artworks_df"-dataframe:
+So now we managed to get the production start and end out of the nested JSON format. Next we will use the function `glimpse()` to create a summary of the "flourishing_artworks_df"-data frame:
 
 ```{r}
 glimpse(flourishing_artworks_df)

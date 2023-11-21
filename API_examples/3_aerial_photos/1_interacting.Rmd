@@ -39,9 +39,9 @@ This relationship can also be imagined as tree with a root with branches:
 
 For further information and explanation of XML see page 42 in Munzert, Simon, Christian Rubba, Peter Meißner, and Dominic Nyhuis. *Automated Data Collection with R: a Practical Guide to Web Scraping and Text Mining*. New York: WILEY, 2014.
 
-The mark-up language hierarchical structure is not really helpful in R, where dataframes are preferred instead. I other words the data is wanted like this in R:
+The mark-up language hierarchical structure is not really helpful in R, where data frames are preferred instead. I other words the data is wanted like this in R:
 
-*artists* dataframe:
+*artists* data frame:
 
 | person_id | name                | surname    |   movement   |
 |----------:|:--------------------|------------|:------------:|
@@ -50,9 +50,9 @@ The mark-up language hierarchical structure is not really helpful in R, where da
 
 <br>
 
-This little example shows the fundamental task for this lesson.  This brief introduction to XML is by no means exhaustive, but will be elaborated more as the lesson progresses. One important thing to bear in mind is that this lesson isn't trying to be a comprehensive description of XML, but provide enough knowledge in order to wrangle the XML into a dataframe structure. 
+This little example shows the fundamental task for this lesson.  This brief introduction to XML is by no means exhaustive, but will be elaborated more as the lesson progresses. One important thing to bear in mind is that this lesson isn't trying to be a comprehensive description of XML, but provide enough knowledge in order to wrangle the XML into a data frame structure. 
 
-Before diving into the interaction with the API, the first challenge of this lesson is to parse the previous simple example into a R-dataframe. As usually in R the first step is to load the relevant libraries.
+Before diving into the interaction with the API, the first challenge of this lesson is to parse the previous simple example into a R-data frame. As usually in R the first step is to load the relevant libraries.
 
 # Loading libraries
 
@@ -90,7 +90,7 @@ artists <- read_xml('<?xml version="1.0" encoding="UTF-8"?>
 ```{r}
 artists
 ```
-When exploring this xml-document through R we notice that the first line in curly brackets describes what type of document is at hand. Not surprisingly it says "xml document". The next line is the root of our xml-document followed by its two children.  
+When exploring this xml-document through R we notice that the first line in cURLy brackets describes what type of document is at hand. Not surprisingly it says "xml document". The next line is the root of our xml-document followed by its two children.  
 Before trying to extract names and surnames of the artists it is necessary to dwell on the root: 
 
 > <artists xmlns="https://chc.au.dk">
@@ -105,7 +105,7 @@ artists %>%
 ```
 This means that in the current situation the namespace is named d1. This will be important in a moment.  
 
-Taking a step back the challenge is to use R to select the relevant elements and piece them together again as a dataframe. But how is single elements of the XML targeted? The answer is Xpath(XML Path Language) in combination with the namespace. Xpath is used to define the path through the XML hierarchy to a given piece of information in the XML. In other words Xpath is a finger used to pointing a elements of interest. For more info see [W3 Consortium's recommendation on Xpath](https://www.w3.org/TR/xpath-31/).  
+Taking a step back the challenge is to use R to select the relevant elements and piece them together again as a data frame. But how is single elements of the XML targeted? The answer is Xpath(XML Path Language) in combination with the namespace. Xpath is used to define the path through the XML hierarchy to a given piece of information in the XML. In other words Xpath is a finger used to pointing a elements of interest. For more info see [W3 Consortium's recommendation on Xpath](https://www.w3.org/TR/xpath-31/).  
 
 In this example the Xpath finger is pointing to the two surnames of our artists xml document. Notice how the namespace "d1" is prefixed to the element(surname). Thus two surname-elements are extracted:
 
@@ -206,7 +206,7 @@ So right now we have our xml-document within R. Right beneath the _{xml_document
 estrup_xml
 ```
 
-But it is still not in the dataframe form that we want it to be in order to use the analytical powers of R. But before we can start this progress we need to inspect the structure of the xml-file. Otherwise we wont be able to identify which elements we are interested in extracting from the xml-document to our dataframe. 
+But it is still not in the data frame form that we want it to be in order to use the analytical powers of R. But before we can start this progress we need to inspect the structure of the xml-file. Otherwise we wont be able to identify which elements we are interested in extracting from the xml-document to our data frame. 
 From the introduction we know that xml is hierarchical structured. This structure is commonly referred to as a family three, which is also the case with the `xml2`package functions, that we use here. Lets inspect our root of the estrup_xml:
 
 ```{r}
@@ -320,7 +320,7 @@ This is the link to the thumbnail of the aerial photograph stored within the fir
 
 The next step will be to utilise the insights gained in the previous section to extract all the childs of 'Placemark' and all the childs under 'ExtendedData' using Xpath.
 
-# Parsing the xml file to a dataframe using Xpath
+# Parsing the xml file to a data frame using Xpath
 
 Since the 'Placemark'-childs are some levels above the root of the xml-file the first thing we need to do is extract them.
 
@@ -404,7 +404,7 @@ tibble(
   )
 ```
 
-Using the knowledge from this lesson it is possible to create a larger dataframe that holds all the data from the Placemarks:
+Using the knowledge from this lesson it is possible to create a larger data frame that holds all the data from the Placemarks:
 
 ```{r}
 tibble(

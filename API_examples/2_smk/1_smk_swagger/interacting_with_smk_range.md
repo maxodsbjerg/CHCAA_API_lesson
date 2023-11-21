@@ -57,7 +57,7 @@ The next step is to scroll past all the other fields, while not worrying to much
 Let the API run for a minute and soon you will see the response below the "*Execute*"-button: 
 ![The response](instruction_pics/8_response.png)
 
-The first black box is a curl-instruction to be used at a command line. This wont be the focus of this lesson.  
+The first black box is a cURL-instruction to be used at a command line. This wont be the focus of this lesson.  
 The next black box is the request URL used for accessing the data returned. If you look closely you'll notice our dates of interest in that URL. We will use this URL and discuss it further in the next lesson. For now we move on to the next and biggest black box.  
 Under "*Server Response*" we see "*Response body*". This is a neatly formatted preview of data that is found when opening the request URL. By skimming the response, and not worrying to much about what it all means, we see "Den Kongelige Kobberstiksamling". This is a first indication that we are on to something.  
 If we study the response closer we see that the first line is "*offset: 0*", which means that that the API starts returning art works from 0. This will make more sense after discussing the next two lines.  

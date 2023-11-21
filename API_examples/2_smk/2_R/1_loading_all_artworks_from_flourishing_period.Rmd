@@ -27,7 +27,7 @@ library(jsonlite)
 ```
 
 
-# Loading the request url into R
+# Loading the request URL into R
 
 From the previous lesson we have the request URL that returned 10 out of
 5084 art works from the flourishing period. Let us import this into R:
@@ -160,7 +160,7 @@ will give us the first 2000 art works from the flouirshing period. In
 the second URL the offset has been changed to 2000 with the rows still
 being set to the maximum of 2000. This link thus takes up where the
 first one left off. This is all so the logic in the third URL where the
-offset has been set to 4000, since the two first urls returns the first
+offset has been set to 4000, since the two first URLs returns the first
 4000 art works from our period. These three URLs will return all of our
 5084 art works from the period.
 
@@ -216,8 +216,8 @@ Since the changing part of of URL is the offset value we use the
 flourishing_artworks <- tibble()
 
 for (i in seq(0, 4000, 2000)) {
-  response_url <- paste0("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=", i, "&rows=2000")
-  response <- fromJSON(response_url)
+  response_URL <- paste0("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=", i, "&rows=2000")
+  response <- fromJSON(response_URL)
   df <- response$items
   flourishing_artworks <- bind_rows(flourishing_artworks, df)
 }
