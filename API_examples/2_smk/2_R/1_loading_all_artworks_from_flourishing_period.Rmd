@@ -19,7 +19,7 @@ This lesson is the second concrete example of how to interact with a specific AP
 
 # Libraries
 
-Before we embark on bringing in the data and doing a simple analysis we must load the relevant packages that adds numerous functionalisties to R - just as was done in the previous example. Here the relevant packages are:
+Before embarking on bringing in the data and doing a simple analysis the relevant packages that adds numerous functionalities to R are loaded - just as was done in the previous example. Here the relevant packages are:
 
 ```{r, message=FALSE}
 library(tidyverse)
@@ -29,30 +29,28 @@ library(jsonlite)
 
 # Loading the request URL into R
 
-From the previous lesson we have the request URL that returned 10 out of
-5084 art works from the flourishing period. Let us import this into R:
+The previous lesson created request URL that returned 10 out of
+8884 art works from the flourishing period. This response is loaded into R:
 
 ```{r}
 flourishing <- fromJSON("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=0&rows=10")
 ```
 
-What we do in the code above is to take the data from the request URL
-and put it into an element within R that we call "flourishing". In the
-environment panel we see the new element: ![The element "flourishing" in
+The code above takes the data from the request URL
+and put it into an element within R that is named "flourishing". In the
+environment panel a new element occurs: ![The element "flourishing" in
 the
 environment](pic/screenshots/loading_all_flourishing_works/0_environment.png)
 By clicking on the name (not the blue button, but the actual name
-"flourishing) we open a new tab, which let's us see what is inside this
+"flourishing) a new tab opens, which shows what is inside this
 element: ![Exploring element
 "flourishing"](pic/screenshots/loading_all_flourishing_works/1_flouirishing_element.png)
-When inspecting the "flourishing"-element we see the same information,
-that we saw when we were looking at the response in the Swagger
-interface of the SMK API, but here it is represented differently. To
-recap: We have an offset of zero, we have ten rows meaning we got 10 arts
-works in the response and there was found 5084. The next thing we notice
+This is the exact same data that was shown in the SMK Swagger-interface in the previous lesson, but here it is represented differently. To
+recap: The offset is zero, ten rows meaning representing 10 arts
+works in the response and there was found 8884 in total. The next thing of interest
 is "items", which consist of a data frame with 10 rows and 49 columns.
-This is where all the information on the ten art works we got is stored.
-We can pin point this particular part of the flourishing element for
+This is where all the information on the ten art works is stored.
+This particular part of the flourishing element can be pin pointed for
 inspection by first writing the name of the element and after a dollar
 sign writing the name of the part that we want to inspect(in this case
 "items"):
@@ -61,16 +59,13 @@ sign writing the name of the part that we want to inspect(in this case
 colnames(flourishing$items)
 ```
 
-So this is the interesting part and what we are after. But we still have
-the problem that we only have ten art works out of 5084. Before we
-venture into the data frame above(it poses challenges in it self), we
-need to make it a data frame containing all the 5084 art works.
+This is where the interesting information about the artworks are stored, but there is still the problem that only ten art works out of 8884 are returned by the current URL response. Before venturing on into the data frame above(it poses challenges in itself), all of the 8884 artwork will be obtained.
 
-For us to do that we need to return our focus to the request link:
+In order to do extract all the 8884 artworks the request URL needs to be examined in further depth:
 
 > <https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=0&rows=10>
 
-It looks like an incomprehensible blob of signs, but if we brake it down
+It looks like an incomprehensible blob of signs, but if broken down
 it will begin to make sense:
 
 The request URL basically consists of two parts:
@@ -83,26 +78,26 @@ Request:
 
 > keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=0&rows=10
 
-The base URL remains the same no matter what, so let us focus on the
+The base URL remains the same no matter what, so let's focus on the
 request part. This can be further broken down by looking at all the
 ampersand(&)-signs. Every ampersand-sign indicates a new part of the
 request. Let's break them apart one by one: \>keys=%2A&
 
-So this is the search key, but what is "%2A"? This is because URLs can't
+This is the search key, but what is "%2A"? This is because URLs can't
 contain special characters since they are transmitted over the internet.
 Therefore special characters needs to be encoded, so they can go into an
 URL. In this case "\*" is translated into "%2A". So this particular part
-of the request part is our asterisk search, which in most search engines
-is equivalent to "give me everything". Lets look at the next part.
+of the request part is the asterisk search, which in most search engines
+is equivalent to "give me everything". Let's look at the next part.
 
 > range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&
 
-This is the part were we state the period we are interested in. From the
-previous lesson we recognise several part of it: the field we are
+This part states the period of interest. From the
+previous lesson several parts of it can be recognised: the field we are
 working with (production_dates_end), the start date (1775-01-01) and the
-end date (1807-09-30). Besides that we see alot of percentage signs (%)
-which is again due to URL encoding. Instead of explaing every signs
-URL-encoding we can use the package "urltools"'s function `URLdecode()`
+end date (1807-09-30). Besides that there is a lot of percentage signs (%)
+which is again due to URL encoding. Instead of explaining every sign of the
+URL-encoding the function `URLdecode()` from the package "urltools" is used
 to decode it:
 
 ```{r}
@@ -111,18 +106,19 @@ library(urltools)
 URLdecode("range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&")
 ```
 
-What we get is the exact same thing that we inserted in the Swagger API
+The decoded result is the exact same thing that was inserted in the Swagger API
 interface of the SMK API.
 
-If we focus on the next part we see the following:
+The next part states the offset:
 
 > offset=0&
 
-This is were we define our offset, so were in the result the API should
-begin to return. The next part of the request part of the URL is, where
-we define how many rows that are returned: \>rows=10
+This is where we define our offset, so were in the result the API should
+begin to return. The next part of the request part of the URL is, the amount of rows to be returned is defined: \
 
-So if we once again return to the entire request part of the URL:
+>rows=10
+
+Returning to the entire request part of the URL:
 
 > keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=0&rows=10
 
@@ -131,20 +127,20 @@ will in plain speak be:
 > give us everything within the period starting from 1775-01-01 to
 > 1807-09-30 and give us the first ten results
 
-So if we return to our initial goal: getting all 5084 artworks instead
+So focusing again on the initial goal: getting all 8884 artworks instead
 of just 10. Is the solution as simple as changing the rows part of the
-request URL? Well lets try!
+request URL? 
 
-> <https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=0&rows=5084>
+> <https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=0&rows=8884>
 
-When we try to put this request URL in the browser we are handed an
+When trying this request URL in the browser we are handed an
 error message saying:
 
 > {"error":"Too many rows, max is 2000"}
 
-So this is a bit disappointing. Does this mean that we will never get
-all 5084 art works from the period? Thankfully this is not the case. But
-we need to tamper with both the rows and the offset part of the request
+Does this mean that
+all the 8884 artworks can't be acquired? Thankfully this is not the case. But
+tampering with both the rows and the offset part of the request
 URL. Notice how the offset changes.
 
 > <https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=0&rows=2000>
@@ -154,15 +150,14 @@ URL. Notice how the offset changes.
 > <https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=4000&rows=2000>
 
 The three URLs above are exactly the same except from the offset value.
-In the first link we notice that it is still zero and that we have
-changed rows to 2000 - the maximum we can get from one URL. This URL
-will give us the first 2000 art works from the flouirshing period. In
+In the first link notice that it is still zero and only the row field has been changed to 2000 - the maximum we can get from one URL. This URL
+will return the first 2000 art works from the flourishing period. In
 the second URL the offset has been changed to 2000 with the rows still
 being set to the maximum of 2000. This link thus takes up where the
 first one left off. This is all so the logic in the third URL where the
 offset has been set to 4000, since the two first URLs returns the first
-4000 art works from our period. These three URLs will return all of our
-5084 art works from the period.
+4000 art works from our period. These three URLs will return all of the
+8884 art works from the period.
 
 We can load these three links exactly the same way we did before:
 
@@ -173,44 +168,46 @@ flourishing_2000 <- fromJSON("https://api.smk.dk/api/v1/art/search?keys=%2A&rang
 
 flourishing_4000 <- fromJSON("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=4000&rows=2000")
 
+flourishing_6000 <- fromJSON("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=6000&rows=2000")
+
+flourishing_8000 <- fromJSON("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=8000&rows=2000")
+
 ```
 
-So now we have our 5084 dispersed on three elements. Remeber before how
-the actual data was "hidden" inside *items* in the element and how we
-pin pointed it with the dollar sig? We are going to do the same thing
+So now we have our 8884 dispersed on three elements. Remember before how
+the actual data was "hidden" inside *items* in the element and how it could be
+pin pointed with the dollar sign? The next step is to do the same thing
 and combine them with the `bind_rows()`-function and saving the result
-to a data frame we call flourishing (thus overwriting our initial
+to a data frame called flourishing (thus overwriting the initial
 element which was the response that only held 10 art works)
 
 ```{r}
-flourishing <- bind_rows(flourishing_0$items, flourishing_2000$items, flourishing_4000$items)
+flourishing <- bind_rows(flourishing_0$items, flourishing_2000$items, flourishing_4000$items, flourishing_6000$items, flourishing_8000$items)
 ```
 
-Let us see our new data frame:
+Let's examine the new data frame:
 
 ```{r}
 flourishing
 ```
 
-We've successfully extracted all the work from the flourishing period!
-But a question might rise. What if we had chose a longer period
+The artworks from the flourishing period has been successfully extracted!
+But a question might rise. What if the period had been longer
 resulting i a larger body of art works being returned? This could create
-a situation were we wanted to extract 20000 art works. This would have
-us create 10 request URL each incrementing the offset by 2000. This
+a situation were total number of artworks was 20000. This would have
+frequire 10 request URL each incrementing the offset by 2000. This
 would be tedious work. Constructing URLs and other things in the hand is
-fine, when dealing with smaller numbers like three, but you might want
+fine, when dealing with smaller numbers like three, but one might want
 to look into automating the task instead (both the creation of URL and
-the extraction of the data frame). Lets extract our 5084 art works a
-little smarter, which will be helpful the next time, where we might want
-to extract many more art works:
+the extraction of the data frame). Let's extract our 8884 art works a
+little smarter, which will be helpful the next time.
 
-We are going to use a for loop for this. If you need to freshen up your
-knowledge on for loops see the [for loops and
-range()](https://chcaa.au.dk/#/courses/Humanities_Programming/modules/Control_Flow#for%20loops%20and%20range())-section
+To do this a for loop is needed. If a brush up on for loops i needed see the [for loops and
+range()](https://github.com/CHCAA-EDUX/Programming-for-the-Humanities-E23/blob/main/lessons/lesson_02.md)-section
 in the [Humanities
-Programming](https://chcaa.au.dk/#/courses/Humanities_Programming)-course.
-Since the changing part of of URL is the offset value we use the
-`seq()`-function to create a vector of our three offset-values.
+Programming](https://github.com/CHCAA-EDUX/Programming-for-the-Humanities-E23/tree/main)-course.
+Since the changing part of of URL is the offset value the
+`seq()`-function is used to create a vector of our three offset-values.
 
 ```{r}
 flourishing_artworks <- tibble()
@@ -223,10 +220,9 @@ for (i in seq(0, 4000, 2000)) {
 }
 ```
 
-In the code above we only need to change the `seq()`-function we we were
-to construct 10 URLs returning 20000 art works. The `seq()`function
+In the code above the `seq()` is what is doing the magic. The `seq()`function
 works like this: `seq(from, to, by)` So for the case with 20000 art
-works we would insert into our for loop the following:
+works one would insert into our for loop the following:
 
 ```{r}
 seq(0, 20000, 2000)
