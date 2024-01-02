@@ -5,7 +5,7 @@ date: '2022-05-16'
 output: html_document
 ---
 # Preface
-In this module we are going to look further into the data returned from the flourishing period and what we can do with it. If you're coming directly from the previous module you will already have loaded the neccessary packages and the relevant data. For good measure we will load the packages and the data as the first thing. If any of these steps need further explanation refer to the previous module.
+The focal point of this module is to investigate the data returned from the flourishing period and what can done with it. If you're coming directly from the previous module you will already have loaded the necessary packages and the relevant data. For good measure the packages and the data as the first thing. If any of these steps needs further explanation refer to the previous module.
 
 ## Loading packages
 ```{r, message=FALSE}
@@ -19,7 +19,7 @@ library(jsonlite)
 ```{r}
 flourishing_artworks <- tibble()
 
-for (i in seq(0, 4000, 2000)) {
+for (i in seq(0, 8000, 2000)) {
   response_URL <- paste0("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=", i, "&rows=2000")
   response <- fromJSON(response_URL)
   df <- response$items

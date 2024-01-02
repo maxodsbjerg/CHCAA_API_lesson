@@ -61,7 +61,7 @@ The first black box is a cURL-instruction to be used at a command line. This won
 The next black box is the request URL used for accessing the data returned. If you look closely you'll notice our dates of interest in that URL. We will use this URL and discuss it further in the next lesson. For now we move on to the next and biggest black box.  
 Under "*Server Response*" we see "*Response body*". This is a neatly formatted preview of data that is found when opening the request URL. By skimming the response, and not worrying to much about what it all means, we see "Den Kongelige Kobberstiksamling". This is a first indication that we are on to something.  
 If we study the response closer we see that the first line is "*offset: 0*", which means that that the API starts returning art works from 0. This will make more sense after discussing the next two lines.  
-"*rows: 10*" means that we have only ten of the art works from our period in the response. The next line "*found: 5084*" explains that there are 5084 art works within our period.  
+"*rows: 10*" means that we have only ten of the art works from our period in the response. The next line "*found: 5084*" explains that there are 5084 art works within our period.  **Important: Since SMK is updating the API continuously this number will vary**
 So in summary our response has 10 art works out of 5084. But how du we extract all 5084 art work from the flourishing period? This will be the focus of the next lesson. 
 
 In this lesson you have learned how to interact with a swagger interface in order to construct call to a API 

@@ -30,7 +30,7 @@ library(jsonlite)
 # Loading the request URL into R
 
 The previous lesson created request URL that returned 10 out of
-8884 art works from the flourishing period. This response is loaded into R:
+8884 art works from the flourishing period.**Important: Since SMK is updating the API continuously this number will vary**. This response is loaded into R:
 
 ```{r}
 flourishing <- fromJSON("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=0&rows=10")
@@ -212,7 +212,7 @@ Since the changing part of of URL is the offset value the
 ```{r}
 flourishing_artworks <- tibble()
 
-for (i in seq(0, 4000, 2000)) {
+for (i in seq(0, 8000, 2000)) {
   response_URL <- paste0("https://api.smk.dk/api/v1/art/search?keys=%2A&range=%5Bproduction_dates_end%3A%7B1775-01-01T00%3A00%3A00Z%3B1807-09-30T00%3A00%3A00Z%7D&offset=", i, "&rows=2000")
   response <- fromJSON(response_URL)
   df <- response$items
@@ -221,7 +221,7 @@ for (i in seq(0, 4000, 2000)) {
 ```
 
 In the code above the `seq()` is what is doing the magic. The `seq()`function
-works like this: `seq(from, to, by)` So for the case with 20000 art
+works like this: `seq(from, to, by)`. **Knowing this function is important since SMK is updating the API continuously the total number of artworks will increase.** So for the case with 20000 art
 works one would insert into our for loop the following:
 
 ```{r}
