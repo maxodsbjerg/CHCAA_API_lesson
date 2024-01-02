@@ -26,7 +26,7 @@ for (i in seq(0, 8000, 2000)) {
   flourishing_artworks <- bind_rows(flourishing_artworks, df)
 }
 ```
-
+**Remember that SMK is updating the API continuously, so the total number of artworks has probably increased since the writing of this module. Tinkering with the `sec()`-function is most likely necessary**
 
 
 
@@ -36,25 +36,25 @@ for (i in seq(0, 8000, 2000)) {
 flourishing_artworks
 ```
 
-We have 5082 rows, which means we have 5082 art works returned from the flourishing period. These 5082 art works have 74 columns containing various meta data about the art works. At first sight this looks very good. It is a data frame and a popular way to work in R is based on data frames. But at close inspection things are not as straight forward as they may seem. Let's say we want to examine how these 5082 art works disperses on artists. Shuffling through the columns one might expect to come across a column called "artist", "creator" or something like this. But this is not the case. In order to find information about the creator of the art works we need to shift our focus to the column "production".
+The data frame has 8915 rows, which means 8915 art works have been returned from the flourishing period. These 8915 art works have 74 columns containing various meta data about the art works. At first sight this looks very good. It is a data frame and a popular way to work in R is based on data frames. But at close inspection things are not as straight forward as they may seem. Shuffling through the columns one might expect to come across a column called "artist", "creator" or something like this. But this is not the case. In order to find information about the creator of the art works focus needs to be shifted to the column "production".
 
 ```{r}
 flourishing_artworks %>% 
   select(production)
 ```
-So here we have data frames within rows. This makes things a bit harder since the data frame isn't rectangular. Let's see what's inside the first data frame:
+This column contains of data frames within rows. This makes things a bit harder since the data frame isn't rectangular. Examining the first data frame in the first row gives:
 
 ```{r}
 # 1 row of the 11th column extracted
 flourishing_artworks[1, 11][[1]]
 ```
-So this is where the creator of the art work hides along alot of other information about the creator. In order to find out how the 5082 art works disperses on creators we will extract the creator value from each of the 5082 art work. But before we do so, let us examine another on of the rows:
+So this is where the creator of the art work hides along a lot of other information about the creator. In order to find out how the 8915 art works disperses on creators it is needed to extract the creator value from each of the 8915 art work. But before this is done, another one of the rows is inspected:
 
 ```{r}
-# 8th row of the 11th column extracted
-flourishing_artworks[8, 11][[1]]
+# 6th row of the 11th column extracted
+flourishing_artworks[6, 11][[1]]
 ```
-We see that this particular art work has not one but three creators. The idea of extracting the creator for all the 5082 art works seems to be imperfect as information will be lost. Nonetheless we will continueing this plan and only ectract the first row of the creator column for the 5082 art works. In order to achieve this we will use the `map()`-function in order to select the creator-column from each of the 5082 art works. Using `mutate()` we create a new column called "creator_1" 
+We see that this particular art work has not one but two creators. The idea of extracting the creator for all the 8915 art works seems to be imperfect as information will be lost. Nonetheless this plan will be followed and only the first row of the creator column for the 8915 art works will be extracted. In order to achieve this the `map()`-function will be used in order to select the creator-column from each of the 8915 art works. Using `mutate()` creates a new column called "creator_1" 
 
 
 ```{r}
@@ -62,7 +62,7 @@ flourishing_artworks %>%
   mutate(creator_1 = map(production, "creator"))  %>% 
   select(creator_1)
 ```
-This has given us column that consists of character-vectors(<chr>). In the art works that only have one creator the length of the vector will be one, but in the case we saw before with three creators the lenth will be three. The next step is to extract the first element from these character-vectors thus extracting the name of the creator of the art works with just one creator noted and the first noted creator from art works with more than one. By using `mutate()` we change the column we created before using the `map_chr()`-function. This function is told to go through the "creator_1"-column and extract the first element of the character-vectors: 
+The result is a column that consists of character-vectors(<chr>). In the art works that only have one creator the length of the vector will be one, but in the case from before with two creators the length will be two. The next step is to extract the first element from these character-vectors thus extracting the name of the creator of the art works with just one creator noted and the first noted creator from art works with more than one. By using `mutate()` changes the column we created before using the `map_chr()`-function are made. This function is told to go through the "creator_1"-column and extract the first element of the character-vectors: 
 ```{r}
 flourishing_artworks %>% 
   mutate(creator_1 = map(production, "creator"))  %>% 
@@ -70,7 +70,7 @@ flourishing_artworks %>%
   select(creator_1)
 ```
 
-Since we have the creators of the art works now it is manageable to count the creators thus finding the dispersion of the art works on creators: 
+Since the creators of the art works now is a manageable format, it is possible to count the creators thus finding the dispersion of the art works on creators: 
 
 ```{r}
 flourishing_artworks %>% 
@@ -79,24 +79,24 @@ flourishing_artworks %>%
   select(creator_1) %>% 
   count(creator_1, sort = TRUE)
 ```
-But what about the titles of the art works. It turns out that the situation is similiar even though the column is actually called "titles". It still consists of data frames within rows:
+But what about the titles of the art works. The situation is similar even though the column is actually called "titles". It still consists of data frames within rows:
 ```{r}
 #Row number 14 is "titles"
 flourishing_artworks[14]
 ```
 
-Again we can inspect the first one and see that the first column is called "title" and the row contains the title.
+Once again an inspections reveals that the first column is called "title" and the row contains the title.
 ```{r}
-#First row of the 14 th column ectracted
+#First row of the 14 th column extracted
 flourishing_artworks[1, 14][[1]]
 ```
-How ever the situation is quite similiar på the creator-situation. We can have more than one title: 
+However the situation is quite similar to the creator-situation. More than one title:
 ```{r}
-#First row of the 14 th column ectracted
-flourishing_artworks[4, 14][[1]]
+#49throw of the 14 th column extracted
+flourishing_artworks[49, 14][[1]]
 ```
 
-Just like before we can use the `map()`-function in conjunction with the `mutate()`-function to extract the titles:
+Just like before the `map()`-function in conjunction with the `mutate()`-function extracts the first row in the titles data frames within the titles-column:
 
 ```{r}
 flourishing_artworks %>% 
@@ -106,15 +106,14 @@ flourishing_artworks %>%
   mutate(title = map_chr(title, 1, .null = NA)) %>% 
   select(creator_1, title)
 ```
-
-But what if we want a quick way to see the a piece of art work's information presented in a way that is more readable for people who, unlike you, don't tamper with APIs and raw data. A nice feature of this particular API is that i returns a link to each art work in the National Gallery's online platform: 
+A nice feature of this particular API is that it returns a link to each art work in the National Gallery's online platform. This gives the opportunity to examine a given art work in a more human readable way: 
 
 ```{r}
 flourishing_artworks %>% 
   select(frontend_url)
 ```
 
-This column is all ready in the format we like. One observation pr. row. We do not need to process this column. So if we were to add the "frontend_URL" to our data frame with creator and titles it would be as simple as `select()` the column in the last line of code from before: 
+This column is already in the format: one observation pr. row. Thus this column doesn't need to be processed with the `map()`-function as was the case with the columns production and titles. So adding the "frontend_url" to our data frame with creator and titles is quite straight forward with the `select()`-function added to the code from before: 
 
 
 ```{r}
@@ -126,7 +125,7 @@ flourishing_artworks %>%
   select(creator_1, title, frontend_url)
 ```
 
-Information on when the production started and ended is stored in the column "production_date" and the situation is the same as when we extracted the creators and the titles:
+Information on when the production started and ended is stored in the column "production_date" and the situation is the same as the extraction of the creators and the titles:
 
 ```{r}
 flourishing_artworks %>% 
@@ -142,12 +141,12 @@ flourishing_artworks %>%
 ```
 
 
-So now we managed to get the production start and end out of the nested JSON format. Next we will use the function `glimpse()` to create a summary of the "flourishing_artworks_df"-data frame:
+The new data frame holds information on the creator, titles, production and URL to the art work on SMK's web page. This information is now in a 'one observation per row'-format, which is simpler to work with in R compared to the nested JSON format. Next the function `glimpse()` is used to create a summary of the "flourishing_artworks_df"-data frame:
 
 ```{r}
 glimpse(flourishing_artworks_df)
 ```
-We notice that the first three columns are of the character-type(indicated by "<chr>"). This is fine, the observations consists of text(characters put together). The next column, "on_display", is of the logical type(indicated by <int>). The last two columns is also of the character type, but with hour human eyes we can see that this is dates. And dates is actually also a data type in R, but we need to have R to realise that the characters in "production_start" and "production_end" are indeed dates. For this we use the package [lubridate](https://lubridate.tidyverse.org) and it's function `as_date()` to create a new column, "date_end", that holds just the date(and not the time as well). Next we use the function `count()` to see the completions of works dispersed on dates:
+Notice that the first three columns are of the character-type(indicated by "<chr>"). This is fine, the observations consists of text(characters put together). The next column, "on_display", is of the logical type(indicated by <int>). The last two columns is also of the character type, but a human eye can see that this is actually dates. Since the date-format i a common data type in R, it is needed to have R to realise that the characters in "production_start" and "production_end" are indeed dates. For this the package [lubridate](https://lubridate.tidyverse.org) and it's function `as_date()` is used to create a new column, "date_end", that holds just the date(and not the time as well). In the end the function `count()` disperses the completions of works on dates:
 ```{r}
 library(lubridate)
 
@@ -156,7 +155,7 @@ flourishing_artworks_df %>%
   count(date_end)
 ```
 
-Lets try to visualise the finishing of the art works overtime. Since there is just a few observations in the early 18th century we filter out any observations before 1775-01-01 Using the ggplot2 package we create our visualisation(notice how we assing the x and y-axis withing `ggplot()` and `geom_line()` is where we define that the visualisation should be aline. For more information on data visualisation see chapter 3 - [Data Visualisation](https://r4ds.had.co.nz/data-visualisation.html#data-visualisation) in *R for Data Science*)
+Next step is to visualise the finishing of the art works over time. Since there is just a few observations in the early 18th century any observations before 1775-01-01 are filtered out. Using the ggplot2 package we create the visualisation(notice how the x and y-axis are assigned within `ggplot(aes())` and how `geom_line()` creates the line graph. For more information on data visualisation see chapter 3 - [Data Visualisation](https://r4ds.had.co.nz/data-visualisation.html#data-visualisation) in *R for Data Science*)
 
 ```{r}
 flourishing_artworks_df %>%
